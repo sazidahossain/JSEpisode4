@@ -155,26 +155,25 @@ function relatedBooks(bookId, authors, books) {
  *   co-authored the greatest number of books
  ****************************************************************/
 function friendliestAuthor(authors) {
-  let score = {};
-  for (var i = 0; i < authors.length; i++) {
-    authors[i]["name"] = 0;
-  }
-  let book;
-  let bookId;
-  for (var i = 0; i < authors.length; i++) {
-    for (var j = 0; j < authors["books"].length; j++) {
-      bookId = authors[i]["books"][j];
-      book = getBookById(bookId, authors[i]["books"]);
-      if (book["authors"].length > 1) {
-        for (var x = 0; x < book["authors"].length; x++) {
-          score.book["authors"][x]["name"] += 1;
-        }
+  authors.forEach(author => {
+    author.score = 0;
+    authors.forEach(secondAuthor => {
+      if (secondAuthor.name !== author.name) {
+        const sharedbooks = secondAuthor.books.filter(bookId =>
+          author.books.includes(bookId)
+        );
+        author.score += sharedbooks.length;
       }
+    });
+  });
+  let authorx = authors[0];
+  authors.forEach(author => {
+    if (author.score > authorx.score) {
+      authorx = author;
     }
-  }
-  let names = Object.keys(score);
-  let max;
-  for (var i = 0; i < names.length; i++) {}
+  });
+
+  return authorx.name;
 }
 
 module.exports = {
