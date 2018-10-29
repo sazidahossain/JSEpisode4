@@ -6,7 +6,10 @@
  * - returns undefined if no matching book is found
  ****************************************************************/
 function getBookById(bookId, books) {
-  // Your code goes here
+  var result = books.find(obj => {
+    return obj["id"] === bookId;
+  });
+  return result;
 }
 
 /**************************************************************
@@ -17,7 +20,10 @@ function getBookById(bookId, books) {
  * - returns undefined if no matching author is found
  ****************************************************************/
 function getAuthorByName(authorName, authors) {
-  // Your code goes here
+  var result = authors.find(obj => {
+    return obj["name"].toLowerCase() === authorName.toLowerCase();
+  });
+  return result;
 }
 
 /**************************************************************
@@ -27,7 +33,14 @@ function getAuthorByName(authorName, authors) {
  *    [{ author: <NAME>, bookCount: <NUMBER_OF_BOOKS> }]
  ****************************************************************/
 function bookCountsByAuthor(authors) {
-  // Your code goes here
+  let arr = [];
+  for (var i = 0; i < authors.length; i++) {
+    arr.push({
+      author: authors[i]["name"],
+      bookCount: authors[i].books.length
+    });
+  }
+  return arr;
 }
 
 /**************************************************************
@@ -39,8 +52,13 @@ function bookCountsByAuthor(authors) {
  ****************************************************************/
 function booksByColor(books) {
   const colors = {};
-
-  // Your code goes here
+  for (var i = 0; i < books.length; i++) {
+    if (!colors[books[i]["color"]]) {
+      colors[books[i]["color"]] = [books[i]["title"]];
+    } else {
+      colors[books[i]["color"]].push(books[i]["title"]);
+    }
+  }
 
   return colors;
 }
@@ -54,7 +72,19 @@ function booksByColor(books) {
  *    ["The Hitchhikers Guide", "The Meaning of Liff"]
  ****************************************************************/
 function titlesByAuthorName(authorName, authors, books) {
-  // Your code goes here
+  let name = authorName;
+  if (!name) {
+    return [];
+  }
+  let arr = [];
+  for (var i = 0; i < books.length; i++) {
+    for (var j = 0; j < books[i]["authors"].length; j++) {
+      if (books[i]["authors"][j]["name"].toLowerCase() === name.toLowerCase()) {
+        arr.push(books[i]["title"]);
+      }
+    }
+  }
+  return arr;
 }
 
 /**************************************************************
@@ -66,6 +96,16 @@ function titlesByAuthorName(authorName, authors, books) {
  ****************************************************************/
 function mostProlificAuthor(authors) {
   // Your code goes here
+  let books = bookCountsByAuthor(authors);
+  let max = 0;
+  let obj;
+  for (var i = 0; i < books.length; i++) {
+    if (books[i].bookCount > max) {
+      max = books[i].bookCount;
+      obj = books[i];
+    }
+  }
+  return obj.author;
 }
 
 /**************************************************************
@@ -92,7 +132,20 @@ function mostProlificAuthor(authors) {
  * BONUS: REMOVE DUPLICATE BOOKS
  ****************************************************************/
 function relatedBooks(bookId, authors, books) {
-  // Your code goes here
+  let book = getBookById(bookId, books);
+  authors = [];
+  for (var i = 0; i < book["authors"].length; i++) {
+    authors.push(book["authors"][i]["name"].toLowerCase());
+  }
+  let titles = [];
+  let arr = [];
+  for (var i = 0; i < authors.length; i++) {
+    arr = titlesByAuthorName(authors[i], authors, books);
+    for (var j = 0; j < arr.length; j++) {
+      titles.push(arr[j]);
+    }
+  }
+  return titles;
 }
 
 /**************************************************************
@@ -102,7 +155,26 @@ function relatedBooks(bookId, authors, books) {
  *   co-authored the greatest number of books
  ****************************************************************/
 function friendliestAuthor(authors) {
-  // Your code goes here
+  let score = {};
+  for (var i = 0; i < authors.length; i++) {
+    authors[i]["name"] = 0;
+  }
+  let book;
+  let bookId;
+  for (var i = 0; i < authors.length; i++) {
+    for (var j = 0; j < authors["books"].length; j++) {
+      bookId = authors[i]["books"][j];
+      book = getBookById(bookId, authors[i]["books"]);
+      if (book["authors"].length > 1) {
+        for (var x = 0; x < book["authors"].length; x++) {
+          score.book["authors"][x]["name"] += 1;
+        }
+      }
+    }
+  }
+  let names = Object.keys(score);
+  let max;
+  for (var i = 0; i < names.length; i++) {}
 }
 
 module.exports = {
@@ -121,14 +193,14 @@ module.exports = {
  * want to manually test your code
  */
 
-// const authors = require("./authors.json");
-// const books = require("./books.json");
+const authors = require("./authors.json");
+const books = require("./books.json");
 
-// console.log(getBookById(12, books));
+//console.log(getBookById(12, books));
 // console.log(getAuthorByName("J.K. Rowling", authors));
-// console.log(bookCountsByAuthor(authors));
+//console.log(bookCountsByAuthor(authors));
 // console.log(booksByColor(books));
 // console.log(titlesByAuthorName("George R.R. Martin", authors, books));
-// console.log(mostProlificAuthor(authors));
-// console.log(relatedBooks(50, authors, books));
+//console.log(mostProlificAuthor(authors));
+console.log(relatedBooks(46, authors, books));
 // console.log(friendliestAuthor(authors));
